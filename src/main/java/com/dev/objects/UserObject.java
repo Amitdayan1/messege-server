@@ -1,12 +1,28 @@
 package com.dev.objects;
 
-import java.util.List;
-
 public class UserObject {
     private String username;
     private String password;
     private String token;
-    private List<PostObject> posts;
+
+    public UserObject(String username, String password,String token) {
+        this.username = username;
+        this.password = password;
+        this.token=token;
+    }
+    public UserObject() {
+        this.username = "";
+        this.password = "";
+        this.token="";
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getUsername() {
         return username;
@@ -22,25 +38,5 @@ public class UserObject {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void addPost (String post) {
-
-    }
-
-    public List<PostObject> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<PostObject> posts) {
-        this.posts = posts;
     }
 }
