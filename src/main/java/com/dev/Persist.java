@@ -9,6 +9,8 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class Persist {
@@ -106,5 +108,43 @@ public class Persist {
         }
     }
 
-}
+   public String getUsernameByToken(String token){
+      String username = null;
+       try {
+           PreparedStatement preparedStatement = this.connection.prepareStatement(
+                   "SELECT username FROM users WHERE token=?");
+           preparedStatement.setString(1, token);
+           ResultSet rs = preparedStatement.executeQuery();
+           if(rs.next())
+          username=rs.getString("username");
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
+       return username;
+   }
+
+    public List<Message> getMessageByUserName(String username) {
+        List<Message> messages = new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(
+                    "SELECT * FROM messages WHERE receiver_id=?");
+            preparedStatement.setString(1, username);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Message message = new Message();
+                message.setSender(rs.getString("sender_id"));
+                message.setReceiver(rs.getString("receiver_id"));
+                message.setTitle(rs.getString("title"));
+                message.setBody(rs.getString("body"));
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    }
+
+
 

@@ -34,11 +34,6 @@ public class TestController {
     }
 
 //more annotations
-    @RequestMapping(value = "/test")
-    public Object test() {
-        return "Adi";
-    }
-
 
     @RequestMapping(value = "/add-user")
     public boolean addUser(String username ,String password) {
@@ -54,6 +49,14 @@ public class TestController {
     @RequestMapping(value = "/log-in")
     public String userLogin(String username,String password){
         return persist.login(username,password);
+    }
+    @RequestMapping(value = "/get-username-by-token")
+    public String getUsernameByToken(String token){
+        return persist.getUsernameByToken(token);
+    }
+    @RequestMapping(value = "/get-messages-by-username")
+    public List<Message> getMessageByUserName(String username){
+        return persist.getMessageByUserName(username);
     }
    // @RequestMapping(value = "/add-message")
     // @RequestMapping(value = "/get-sendername-by-token")
