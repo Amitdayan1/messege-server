@@ -1,5 +1,6 @@
 package com.dev;
 
+import com.dev.objects.Message;
 import com.dev.objects.UserObject;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +28,28 @@ public class Persist {
         String token = null;
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
-                    "SELECT token FROM users WHERE username = ? AND password = ?");
+                    "SELECT username FROM users WHERE username = ?");//if there is no username
             preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                token = resultSet.getString("token");
+            if (!resultSet.next()) {
+                token="0";}
+            else{PreparedStatement preparedStatement1 = this.connection.prepareStatement(
+                    "SELECT password FROM users WHERE password = ?");//if user enter wrong password
+                preparedStatement1.setString(1, password);
+                ResultSet resultSet1 = preparedStatement1.executeQuery();
+                if (!resultSet1.next()){
+                    token="1";
+                }
+                else {PreparedStatement preparedStatement2 = this.connection.prepareStatement(
+                        "SELECT token FROM users WHERE username = ? AND password=?");//if success return token
+                    preparedStatement2.setString(1, username);
+                    preparedStatement2.setString(2,password);
+                    ResultSet resultSet2 = preparedStatement2.executeQuery();
+                    if (resultSet2.next()){
+                        token = resultSet2.getString("token");
+                  }
+                }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,5 +105,6 @@ public class Persist {
             e.printStackTrace();
         }
     }
+
 }
 

@@ -2,6 +2,7 @@ package com.dev.controllers;
 
 import com.dev.Persist;
 
+import com.dev.objects.Message;
 import com.dev.objects.UserObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -49,5 +51,13 @@ public class TestController {
         }
         return isFree;
     }
+    @RequestMapping(value = "/log-in")
+    public String userLogin(String username,String password){
+        return persist.login(username,password);
+    }
+   // @RequestMapping(value = "/add-message")
+    // @RequestMapping(value = "/get-sendername-by-token")
+
 }
+
 

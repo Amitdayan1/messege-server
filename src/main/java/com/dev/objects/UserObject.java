@@ -1,9 +1,12 @@
 package com.dev.objects;
 
+import java.util.List;
+
 public class UserObject {
     private String username;
     private String password;
     private String token;
+
 
     public UserObject(String username, String password,String token) {
         this.username = username;
