@@ -58,8 +58,21 @@ public class TestController {
     public List<Message> getMessageByUserName(String username){
         return persist.getMessageByUserName(username);
     }
-   // @RequestMapping(value = "/add-message")
-    // @RequestMapping(value = "/get-sendername-by-token")
+    @RequestMapping(value = "/send-message")
+    public boolean sendMessage (String sender , String receiver ,String title , String body)
+    {
+        return persist.sendMessage(sender,receiver,title,body);
+    }
+    //set api request function to change message by id to read message
+    @RequestMapping(value = "/set-read-message")
+    public boolean setReadMessage(int messageId){
+        return persist.setReadMessage(messageId);
+    }
+    //set api request function to delete message from table cy id message
+    @RequestMapping(value = "/delete-message-by-id")
+    public boolean deleteMessageById(int messageId){
+        return persist.deleteMessageById(messageId);
+    }
 
 }
 
