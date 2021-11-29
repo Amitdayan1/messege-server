@@ -35,7 +35,7 @@ public class TestController {
 
 //more annotations
 
-    @RequestMapping(value = "/add-user")
+    @RequestMapping(value = "/add-user")//check here what happened when the password empty !! and move to persist
     public boolean addUser(String username ,String password) {
         boolean isFree;
         isFree=persist.doesUsernameFree(username);

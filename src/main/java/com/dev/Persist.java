@@ -110,7 +110,7 @@ public class Persist {
         return flag;
     }
 
-    public void addUser(UserObject userObject) {
+    public void addUser(UserObject userObject) {// Adi or Yuval check password length!!!!!! and move here the method from the test controller !!
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(" INSERT INTO users (username,password,token)"
                     + " values (?,?,?)");
@@ -142,7 +142,7 @@ public class Persist {
         List<Message> messages = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
-                    "SELECT * FROM messages WHERE receiver_id=?");
+                    "SELECT * FROM messages WHERE receiver_id=? ORDER BY send_date DESC , send_time DESC");
             preparedStatement.setString(1, username);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
@@ -188,8 +188,8 @@ public class Persist {
             receiverUserExist = doseUserExist(receiver);
             if (receiverUserExist && title.length()>0 && body.length()>0) {
                 messageSent=true;
-                PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO messages (sender_id, receiver_id, title, body,send_date)\n" +
-                        " VALUES (?,?,?,?,NOW())");
+                PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO messages (sender_id, receiver_id, title, body,send_date,send_time)\n" +
+                        " VALUES (?,?,?,?,NOW(),NOW())");
                 preparedStatement.setString(1, sender);
                 preparedStatement.setString(2, receiver);
                 preparedStatement.setString(3, title);
