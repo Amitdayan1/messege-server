@@ -50,13 +50,14 @@ public class TestController {
     public String userLogin(String username,String password){
         return persist.login(username,password);
     }
+
     @RequestMapping(value = "/get-username-by-token")
     public String getUsernameByToken(String token){
         return persist.getUsernameByToken(token);
     }
     @RequestMapping(value = "/get-messages-by-username")
     public List<Message> getMessageByUserName(String username){
-        return persist.getMessageByUserName(username);
+        return persist.getMessagesByUsername(username);
     }
     @RequestMapping(value = "/send-message")
     public boolean sendMessage (String sender , String receiver ,String title , String body)
@@ -65,15 +66,20 @@ public class TestController {
     }
     //set api request function to change message by id to read message
     @RequestMapping(value = "/set-read-message")
-    public boolean setReadMessage(int messageId){
-        return persist.setReadMessage(messageId);
+    public void setReadMessage(int messageId){
+        persist.setReadMessage(messageId);
     }
     //set api request function to delete message from table cy id message
     @RequestMapping(value = "/delete-message-by-id")
-    public boolean deleteMessageById(int messageId){
-        return persist.deleteMessageById(messageId);
+    public void deleteMessageById(int messageId){
+        persist.deleteMessageById(messageId);
     }
+    @RequestMapping(value = "/dose-user-exist")
+    public boolean doseUserExist(String username) {
+        return persist.doseUserExist(username);
 
+
+    }
 }
 
 

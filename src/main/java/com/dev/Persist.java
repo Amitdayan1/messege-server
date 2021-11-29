@@ -26,39 +26,52 @@ public class Persist {
         }
     }
 
-    public String login(String username, String password) {
+    public String login(String username, String password) {//front!!!!!
         String token = null;
+        if (!doseUserExist(username)) {
+            token = "wrongName";}
+        else
+        {
+            if (!checkPassword(username, password) && (wrongLoginTry(username) < 5)) {
+                addWrongLogin(username);
+                token = "wrongPassword";}
+             if(wrongLoginTry(username) >= 5){
+                    token = "lockedUser";}
+             if (checkPassword(username,password)&&(wrongLoginTry(username) < 5)){
+                token = getUserToken(username);}
+        }
+        return token;
+    }
+
+    private String getUserToken(String username) {
+        String token=null;
         try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement(
-                    "SELECT username FROM users WHERE username = ?");//if there is no username
+            PreparedStatement preparedStatement = this.connection.prepareStatement("SELECT token FROM users WHERE username =?");
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
-                token = "0";
-            } else {
-                PreparedStatement preparedStatement1 = this.connection.prepareStatement(
-                        "SELECT password FROM users WHERE password = ?");//if user enter wrong password
-                preparedStatement1.setString(1, password);
-                ResultSet resultSet1 = preparedStatement1.executeQuery();
-                if (!resultSet1.next()) {
-                    token = "1";
-                } else {
-                    PreparedStatement preparedStatement2 = this.connection.prepareStatement(
-                            "SELECT token FROM users WHERE username = ? AND password=?");//if success return token
-                    preparedStatement2.setString(1, username);
-                    preparedStatement2.setString(2, password);
-                    ResultSet resultSet2 = preparedStatement2.executeQuery();
-                    if (resultSet2.next()) {
-                        token = resultSet2.getString("token");
-                    }
-                }
-
+            if (resultSet.next()) {
+                token=resultSet.getString("token");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return token;
-
+    }
+    public boolean checkPassword(String username, String password)
+    {
+        boolean checkPassword = false;
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement("SELECT password FROM users WHERE username =?");
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                if (resultSet.getString("password").equals(password))
+                    checkPassword = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return checkPassword;
     }
 
     public String createHash(String username, String password) {
@@ -125,7 +138,7 @@ public class Persist {
         return username;
     }
 
-    public List<Message> getMessageByUserName(String username) {
+    public List<Message> getMessagesByUsername(String username) {
         List<Message> messages = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
@@ -139,7 +152,7 @@ public class Persist {
                 message.setTitle(rs.getString("title"));
                 message.setBody(rs.getString("body"));
                 message.setId(rs.getInt("id"));
-                message.setId(rs.getInt("read_or_not"));
+                message.setRead(rs.getInt("read_or_not"));
                 messages.add(message);
             }
         } catch (SQLException e) {
@@ -148,13 +161,13 @@ public class Persist {
         return messages;
     }
 
-    public boolean doseUserExist(String userName) {
+    public boolean doseUserExist(String username) {
         boolean userExist = false;
 
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
                     "SELECT * FROM users WHERE username = ?");
-            preparedStatement.setString(1, userName);
+            preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 userExist = true;
@@ -168,35 +181,35 @@ public class Persist {
 
     }
 
-    public boolean sendMessage (String senderName , String receiverName ,String title , String body) {
-
+    public boolean sendMessage (String sender, String receiver ,String title , String body) {
         boolean receiverUserExist = false;
+        boolean messageSent=false;
         try {
-            receiverUserExist = doseUserExist(receiverName);
-            if (receiverUserExist) {
+            receiverUserExist = doseUserExist(receiver);
+            if (receiverUserExist && title.length()>0 && body.length()>0) {
+                messageSent=true;
                 PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO messages (sender_id, receiver_id, title, body,send_date)\n" +
                         " VALUES (?,?,?,?,NOW())");
-                preparedStatement.setString(1, senderName);
-                preparedStatement.setString(2, receiverName);
+                preparedStatement.setString(1, sender);
+                preparedStatement.setString(2, receiver);
                 preparedStatement.setString(3, title);
                 preparedStatement.setString(4, body);
-                preparedStatement.executeUpdate();
+                preparedStatement.execute();
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return receiverUserExist;
+        return messageSent;
 
     }
 //set given message by id to read message. return true after changes.
         public boolean setReadMessage(int messageId){
             try {
                 PreparedStatement preparedStatement = this.connection.prepareStatement(
-                        "UPDATE messages\n" +
-                                "SET read_or_not = ?, reading_date = NOW() \n" +
-                                "WHERE id = ?");
-                preparedStatement.setInt(1, 1);
-                preparedStatement.setInt(2, messageId);
+                        "UPDATE messages SET read_or_not = 1, reading_date = NOW() WHERE id = ?");
+
+                preparedStatement.setInt(1, messageId);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -205,7 +218,7 @@ public class Persist {
         }
 
         //delete message by id. return true if succeeded.
-        public boolean deleteMessageById(int messageId){
+        public void deleteMessageById(int messageId){
             try{
                 PreparedStatement preparedStatement = this.connection.prepareStatement(
                         "DELETE FROM messages WHERE id = ?"
@@ -215,9 +228,35 @@ public class Persist {
             }catch (SQLException e){
                 e.printStackTrace();
             }
-            return true;
+        }
+    public int wrongLoginTry(String username) {
+        int wrongTry = 0;
+
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement("SELECT connection_trys  FROM users WHERE username =?");
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                wrongTry = resultSet.getInt("connection_trys");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return wrongTry;
+
+    }
+    public void addWrongLogin (String username)
+    {
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement("UPDATE users\n" +
+                    "SET connection_trys = connection_trys + 1\n WHERE username = ?");
+            preparedStatement.setString(1,username);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
+    }
 
     }
 

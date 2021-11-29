@@ -18,8 +18,6 @@ public class Message {
         this.read = read;
     }
 
-
-
     public Message() {
         this.sender ="";
         this.receiver = "";
