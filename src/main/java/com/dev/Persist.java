@@ -110,17 +110,31 @@ public class Persist {
         return flag;
     }
 
-    public void addUser(UserObject userObject) {// Adi or Yuval check password length!!!!!! and move here the method from the test controller !!
+//    PreparedStatement preparedStatement = this.connection.prepareStatement(" INSERT INTO users (username,password,token)"
+//            + " values (?,?,?)
+
+
+    public boolean addUser(String username ,String password) {
+      String token ="";
+      boolean userAdded = false;
+        if (doesUsernameFree(username)) {
+
+            token = createHash(username,password);
+            userAdded = true;
+
         try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement(" INSERT INTO users (username,password,token)"
-                    + " values (?,?,?)");
-            preparedStatement.setString(1, userObject.getUsername());
-            preparedStatement.setString(2, userObject.getPassword());
-            preparedStatement.setString(3, userObject.getToken());
-            preparedStatement.execute();
+            PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO users (username,passwors,token) VALUES (?,?,?)");
+            preparedStatement.setString(1,username);
+            preparedStatement.setString(2,password);
+            preparedStatement.setString(3,token);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+          }
+
+
+          return userAdded;
     }
 
     public String getUsernameByToken(String token) {

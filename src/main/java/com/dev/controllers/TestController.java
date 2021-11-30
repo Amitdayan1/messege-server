@@ -37,14 +37,7 @@ public class TestController {
 
     @RequestMapping(value = "/add-user")//check here what happened when the password empty !! and move to persist
     public boolean addUser(String username ,String password) {
-        boolean isFree;
-        isFree=persist.doesUsernameFree(username);
-        if (isFree) {
-            String token = persist.createHash(username, password);
-            UserObject userObject = new UserObject(username,password,token);
-            persist.addUser(userObject);
-        }
-        return isFree;
+       return persist.addUser(username,password);
     }
     @RequestMapping(value = "/log-in")
     public String userLogin(String username,String password){
