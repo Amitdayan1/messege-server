@@ -152,7 +152,8 @@ public class Persist {
         return username;
     }
 
-    public List<Message> getMessagesByUsername(String username) {
+    public List<Message> getMessagesByToken(String token) {
+        String username = getUsernameByToken(token);
         List<Message> messages = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(

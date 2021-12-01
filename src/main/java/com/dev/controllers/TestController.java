@@ -48,9 +48,9 @@ public class TestController {
     public String getUsernameByToken(String token){
         return persist.getUsernameByToken(token);
     }
-    @RequestMapping(value = "/get-messages-by-username")
-    public List<Message> getMessageByUserName(String username){
-        return persist.getMessagesByUsername(username);
+    @RequestMapping(value = "/get-messages-by-token")
+    public List<Message> getMessageByToken(String token){
+        return persist.getMessagesByToken(token);
     }
     @RequestMapping(value = "/send-message")
     public boolean sendMessage (String sender , String receiver ,String title , String body)
