@@ -123,7 +123,7 @@ public class Persist {
             userAdded = true;
 
         try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO users (username,passwors,token) VALUES (?,?,?)");
+            PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO users (username,password,token) VALUES (?,?,?)");
             preparedStatement.setString(1,username);
             preparedStatement.setString(2,password);
             preparedStatement.setString(3,token);
